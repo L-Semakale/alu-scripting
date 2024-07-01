@@ -1,25 +1,23 @@
-#!/usr/bin/python3
-"""
-Module to fetch the number of subscribers for a given subreddit.
-"""
-import requests
-
+mport requests
 
 def number_of_subscribers(subreddit):
     """
-    Queries the Reddit API and returns the number of subscribers for a given subreddit.
-    If the subreddit is invalid, returns 0.
+    Returns the number of subscribers for a given subreddit.
+
+    Parameters:
+    subreddit (str): The name of the subreddit.
+
+    Returns:
+    int: The number of subscribers.
     """
-    url = f"https://www.reddit.com/r/{subreddit}/about.json"
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(url, headers=headers, allow_redirects=False)
+    user_agent = "Mozilla/5.0 (x11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+    URL = f"https://api.reddit.com/r/{subreddit}/about"
+    
+    headers = {"User-Agent": user_agent}
+    
+    response = requests.get(URL, headers=headers, allow_redirects=False)
+    data = response.json()
+    return data['data']['subscribers']
 
-    if response.status_code == 200:
-        return response.json()["data"]["subscribers"]
-    else:
-        return 0
-
-# Sample usage:
-if __name__ == "__main__":
-    subreddit = "python"
-    print(number_of_subscribers(subreddit))
+# Example usage
+print(number_of_subscribers('python'))
