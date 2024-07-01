@@ -1,15 +1,22 @@
 #!/usr/bin/python3
-""" 0-subs.py """
 import requests
 
-
 def number_of_subscribers(subreddit):
-    """ number_of_subscribers """
-    url = "https://www.reddit.com/r/{}/about.json".format(subreddit)
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(url, headers=headers)
+    """
+    Returns the number of subscribers for a given subreddit.
+    
+    Parameters:
+    subreddit (str): The name of the subreddit.
 
-    if response.status_code == 200:
-        return response.json()["data"]["subscribers"]
-    else:
+    Returns:
+    int: The number of subscribers or 0 if the subreddit is not found or any error occurs.
+    """
+    url = f"https://www.reddit.com/r/{subreddit}/about.json"
+    headers = {"User-Agent": "Mozilla/5.0"}
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json().get("data", {}).get("subscribers", 0)
+    except (requests.RequestException, ValueError, KeyError):
         return 0
+
