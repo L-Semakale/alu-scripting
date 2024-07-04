@@ -1,39 +1,45 @@
 #!/usr/bin/python3
 """
-Contains the number_of_subscribers function
+This module contains a function that queries the Reddit API and
+returns the number of subscribers for a given subreddit.
 """
-import json
-import requests
+import requests  
 
 def number_of_subscribers(subreddit):
-	# Define the URL for the subreddit's about endpoint
-       	url = "https://api.reddit.com/r/{}/about".format(subreddit)
+    """
+    Queries the Reddit API and returns the number of
+    subscribers for a given subreddit.
+    
+    Args:
+        subreddit (str): The name of the subreddit to query.
+    
+    Returns:
+        int: The number of subscribers if the subreddit is valid,
+        otherwise 0.
+    """
+    # Construct the URL for the subreddit's about.json page
+    url = "https://www.reddit.com/r/{}/about.json".format(subreddit)
+    
+    # Set a custom User-Agent to avoid "Too Many Requests" errors
+    headers = {'User-Agent': 'ALU-scripting API 0.1'}
+    
+    try:
+        # Make the GET request to the Reddit API
+        response = requests.get(url, headers=headers, allow_redirects=False)
         
-        # Set a custom User-Agent to avoid Too Many Requests error
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        
-        try:
-            # Make a GET request to the Reddit API
-            response = requests.get(url,headers=headers,allow_redirects=False)
-            
-            # Check if the status code indicates a successful request
-            if response.status_code == 200:
-                try:
-                    # Parse the JSON response
-                    data = response.json()
-                    # Check if the key 'data' exists in the JSON response
-                    if 'data' in data and 'subscribers' in data['data']:
-                        # Return the number of subscribers
-                        return data['data']['subscribers']
-                    else:
-                        # If the 'data' or 'subscribers' key is not present, return 0
-                        return 0
-                except ValueError:
-                    # If there is a JSON decoding error, return 0
-                    return 0
-            else:
-                # If the subreddit does not exist or any other error, return 0
-                return 0
-        except requests.RequestException:
-            # In case of a network error or any other issue, return 0
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Parse the JSON response
+            data = response.json()
+            # Return the number of subscribers
+            return data['data']['subscribers']
+        else:
+            # Return 0 if the subreddit is invalid or the request failed
             return 0
+    except requests.RequestException as e:
+        # Handle any request exceptions (e.g., network issues)
+        print(f"An error occurred: {e}")
+        return 0
+
+# Example usage: print the number of subscribers for the 'reddit' subreddit
+print(number_of_subscribers('reddit'))
