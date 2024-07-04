@@ -1,28 +1,37 @@
 #!/usr/bin/python3
+"""
+Contains the number_of_subscribers function
+"""
 import requests
+
 
 def number_of_subscribers(subreddit):
     """
-    Returns the number of subscribers for a given subreddit.
+    Queries the Reddit API and returns the number of subscribers for a given subreddit.
 
-    Parameters:
-    subreddit (str): The name of the subreddit.
+    Args:
+        subreddit (str): The name of the subreddit to query.
 
     Returns:
-    int: The number of subscribers, or 0 if the subreddit does not exist.
+        int: The number of subscribers for the subreddit. Returns 0 if the subreddit
+             is invalid or if an error occurs.
     """
-    user_agent = "Mozilla/5.0 (x11; Linux x86_64) AppleWebKit/537.36 (HTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
-    url = f"https://api.reddit.com/r/{subreddit}/about"
-
-    headers = {"User-Agent": user_agent}
-
-    response = requests.get(url, headers=headers, allow_redirects=False)
-    if response.status_code == 404:
+    if subreddit is None or not isinstance(subreddit, str):
         return 0
 
-    data = response.json()
-    return data['data']['subscribers']
+    url = f"https://www.reddit.com/r/{subreddit}/about.json"
+    headers = {
+        'User-Agent': 'linux:alu-scripting:v1.0.0 (by /u/Mpho_19)'
+    }
 
-# Example usage
-print(f"Subscribers in 'python': {number_of_subscribers('python')}")
-print(f"Subscribers in 'nonexistentsubreddit': {number_of_subscribers('nonexistentsubreddit')}")
+    try:
+        response = requests.get(url, headers=headers, allow_redirects=False)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("data", {}).get("subscribers", 0)
+        else:
+            return 0
+    except requests.RequestException:
+        return 0
+    except ValueError:
+        return 0
